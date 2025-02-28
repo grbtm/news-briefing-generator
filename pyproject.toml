@@ -1,0 +1,106 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "news-briefing-generator"
+version = "0.1.0"
+description = "Local LLM-powered news briefing generator from RSS feeds."
+readme = "README.md"
+requires-python = ">=3.10"
+authors = [
+    {name = "grbtm", email = "grbtm.newsbriefinggenerator@posteo.org"},
+]
+license = {text = "MIT"}
+keywords = ["news", "briefing", "summarization", "llm", "clustering"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: End Users/Desktop",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3.10",
+    "Topic :: Text Processing :: General",
+]
+dependencies = [
+    "pandas==2.2.3",
+    "hdbscan>=0.8.40",
+    "typer>=0.15.1",
+    "aiohttp>=3.10.10",
+    "requests>=2.32.3",
+    "beautifulsoup4>=4.12.3",
+    "feedparser>=6.0.11",
+    "pyyaml>=6.0.2",
+    "jinja2>=3.1.4",
+    "python-dotenv>=1.0.1",
+    "tqdm>=4.66.6",
+    "langchain==0.3.19",
+    "langchain-ollama==0.2.3",
+    "langchain-huggingface==0.1.2",
+    "pytz==2024.2",
+]
+
+[project.urls]
+Repository = "https://github.com/grbtm/news-briefing-generator"
+Documentation = "https://github.com/grbtm/news-briefing-generator#readme"
+
+[project.scripts]
+news-briefing = "news_briefing_generator.cli.main:app"
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.3.4",
+    "mypy>=1.0.0",
+    "black>=23.0",
+    "isort>=5.0"
+]
+test = [
+    "pytest>=8.3.4",
+    "pytest-asyncio",
+    "pytest-cov"
+]
+lint = [
+    "black>=23.0",
+    "isort>=5.0",
+    "mypy>=1.0.0",
+    "ruff>=0.1.0"
+]
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/news_briefing_generator"]
+include = ["src/news_briefing_generator/py.typed"]
+[tool.hatch.build.targets.wheel.force-include]
+"configs" = "configs"
+
+[tool.black]
+line-length = 88
+target-version = ['py310']
+
+[tool.mypy]
+python_version = "3.10"
+warn_return_any = true
+warn_unused_configs = true
+disallow_untyped_defs = true
+
+[tool.isort]
+profile = "black"  # Makes isort compatible with black
+multi_line_output = 3
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+testpaths = ["tests"]
+python_files = "test_*.py"
+filterwarnings = [
+    "ignore::DeprecationWarning"
+]
+
+[tool.coverage.run]
+source = ["src/news_briefing_generator"]
+omit = ["tests/*"]
+
+[tool.ruff]
+line-length = 88
+target-version = "py310"
+select = ["E", "F", "B", "I"]
+ignore = []
+
+[tool.ruff.per-file-ignores]
+"__init__.py" = ["F401"]

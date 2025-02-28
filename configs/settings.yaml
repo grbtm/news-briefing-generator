@@ -1,0 +1,72 @@
+# General configuration precedence (highest to lowest):
+# 1. Command line arguments
+# 2. Workflow configs (configs/workflow_configs.yaml)
+# 3. Environment variables (NBG_ prefixed)
+# 4. Environment settings (settings.{env}.yaml)
+# 5. Base settings (settings.yaml)
+# 6. Class defaults (defined per Task in src/news_briefing_generator/tasks/)
+
+#######################################################
+#                Core configuration                   #
+#                                                     #
+#######################################################
+
+# Database configuration
+database:
+  path: "data/db.sqlite"
+
+# List of RSS/Atom/JSON feeds
+feeds:
+  - name: "Example feed name"
+    url: ""
+
+# For local LLMs
+ollama:
+  base_url: "http://localhost:11434"
+  model: "llama3.1:8b" # Model name
+  num_ctx: 12288 # Set the context window size
+  num_predict: 8192 # Number of prediction tokens
+  temperature: 0.3 # Sampling temperature
+
+# Logging configuration
+logging:
+  level: INFO
+  format: "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+  date_format: "%Y-%m-%d %H:%M:%S"
+  log_file: "logs/news_briefing.log"
+  queue_size: -1
+
+# Briefing defaults
+nr_topics: 12 # total nr of topics covered in the final briefing
+time_window_hours: 24 # consider only articles published in the last 24 hours
+
+#######################################################
+#                Task-level configuration             #
+#  two level structure: {task name}.{parameter name}  #
+#######################################################
+
+feed_collection:
+  timeout: 15
+  user_agent: "Mozilla/5.0"
+
+feed_hdbscan_clustering: # Comments below from the HDBSCAN documentation (+ additions):
+  # The minimum size of clusters; single linkage splits that contain
+  # fewer points than this will be considered points "falling out" of a
+  # cluster rather than a cluster splitting into two new clusters. (default=5)
+  # Smaller values allow the formation of smaller clusters
+  min_cluster_size: 2
+  # The number of samples in a neighborhood for a point to be considered as a core point.
+  # This includes the point itself. When None, defaults to min_cluster_size.
+  # Lower values allow smaller clusters to form. (default=None)
+  min_samples: 2
+  # A distance threshold. Clusters below this value will be merged.
+  # Smaller values make the algorithm more sensitive to small variations,
+  # potentially creating more clusters. (default=0.0)
+  cluster_selection_epsilon: 0.1
+
+topic_selection:
+  nr_of_topics: 12
+
+content_fetching:
+  user_agent: "Mozilla/5.0"
+  check_robots_txt: true

@@ -1,0 +1,45 @@
+# Version control
+.git
+.gitignore
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+*.py[cod]
+*$py.class
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Virtual Environment
+.env
+.venv
+env/
+venv/
+ENV/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Project specific
+*.sqlite
+logs/
+.mypy_cache/
+.ruff_cache/
+.deepeval/
+*.html
+
+# Documentation
+docs/
+LICENSE
+
+# Build artifacts
+dist/
+build/
+*.egg-info/

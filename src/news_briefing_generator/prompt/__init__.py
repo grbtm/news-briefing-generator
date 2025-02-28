@@ -1,0 +1,1 @@
+"""This module contains the prompts for the news briefing generator."""

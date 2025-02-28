@@ -1,0 +1,95 @@
+workflows:
+  full_briefing_w_selection_review:
+    tasks:
+      - name: collect_feeds
+        task_type: FeedCollectionTask
+        depends_on: []
+        params:
+          timeout: 20
+
+      - name: cluster_feeds
+        task_type: FeedHdbscanClusteringTask
+        depends_on: [collect_feeds]
+
+      - name: generate_topic_titles
+        task_type: TopicTitleGenerationTask
+        depends_on: [cluster_feeds]
+
+      - name: select_topics
+        task_type: TopicSelectionTask
+        depends_on: [generate_topic_titles]
+        params:
+          nr_topics: 12
+          nr_sample_headlines: 7
+        human_review: true
+
+      - name: fetch_content
+        task_type: ContentFetchingTask
+        depends_on: [select_topics]
+        params:
+          check_robots_txt: false
+
+      - name: summarize_articles
+        task_type: ArticleSummarizationTask
+        depends_on: [fetch_content]
+        params:
+          nr_articles: 8
+
+      - name: summarize_topics
+        task_type: TopicSummarizationTask
+        depends_on: [summarize_articles]
+        params:
+          summaries_per_topic: 7
+
+      - name: generate_briefing_html
+        task_type: BriefingHtmlGenerationTask
+
+  full_auto_briefing:
+    tasks:
+      - name: collect_feeds
+        task_type: FeedCollectionTask
+        depends_on: []
+        params:
+          timeout: 20
+
+      - name: cluster_feeds
+        task_type: FeedHdbscanClusteringTask
+        depends_on: [collect_feeds]
+
+      - name: generate_topic_titles
+        task_type: TopicTitleGenerationTask
+        depends_on: [cluster_feeds]
+
+      - name: select_topics
+        task_type: TopicSelectionTask
+        depends_on: [generate_topic_titles]
+        params:
+          nr_topics: 10
+          nr_sample_headlines: 7
+        llm:
+          type: "ollama"
+          model: "llama3.1:8b"
+          num_ctx: 12288
+          num_predict: 8192
+          temperature: 0.3
+
+      - name: fetch_content
+        task_type: ContentFetchingTask
+        depends_on: [select_topics]
+        params:
+          check_robots_txt: false
+
+      - name: summarize_articles
+        task_type: ArticleSummarizationTask
+        depends_on: [fetch_content]
+        params:
+          nr_articles: 7
+
+      - name: summarize_topics
+        task_type: TopicSummarizationTask
+        depends_on: [summarize_articles]
+        params:
+          summaries_per_topic: 7
+
+      - name: generate_briefing_html
+        task_type: BriefingHtmlGenerationTask

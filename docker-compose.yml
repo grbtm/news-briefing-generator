@@ -1,0 +1,20 @@
+services:
+  news-briefing:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile
+    volumes:
+      - ./configs:/app/configs
+      - ./logs:/app/logs
+      - ./briefings:/app/briefings  # generated html briefings
+      - ./data:/app/data            # sqlite db
+      - ./feeds:/app/feeds          # opml files containing feeds
+    environment:
+      - NBG_BASE_URL_OLLAMA=http://host.docker.internal:11434
+      - NBG_CONFIGS_DIR=/app/configs
+    networks:
+      - default
+
+networks:
+  default:
+    driver: bridge
