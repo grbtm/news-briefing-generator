@@ -236,7 +236,7 @@ class BriefingHtmlGenerationTask(Task):
             <div class="warning">
                 Warning: This briefing was generated using artificial intelligence and can contain mistakes. Please verify important information from primary sources.
             </div>
-            <p><em>Generated on {{ date }}</em></p>
+            <p><em>Generated on {{ date }} UTC</em></p>
             
             {% for topic in topics %}
             <div class="topic">
