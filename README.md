@@ -11,7 +11,7 @@ Note: Currently only tested on macOS.
 - [Ollama](https://ollama.com/) installed
 - at least one Ollama model installed (e.g. `ollama pull llama3.1:8b`)
 
-### Installing from Source
+### Option 1: Local Installation
 ```bash
 # Clone the repository
 git clone https://github.com/grbtm/news-briefing-generator.git
@@ -33,7 +33,7 @@ pip install .
 pip install ".[test]"
 ```
 
-### Using Docker
+### Option 2: Docker Installation
 ```bash
 # Clone the repository
 git clone https://github.com/grbtm/news-briefing-generator.git
