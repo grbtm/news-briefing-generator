@@ -173,12 +173,11 @@ cython_debug/
 .deepeval
 .deepeval_telemtry.txt
 
-# Feed database
+# App database
 *.sqlite
-data/
 
 # Generated briefings
-briefings/
+*.html
 
 # Configs
 settings.yaml
@@ -187,5 +186,4 @@ settings.yaml
 logs/
 
 # OPML files
-/feeds
 *.opml

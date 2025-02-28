@@ -8,7 +8,7 @@ Note: Currently only tested on macOS.
 ### Prerequisites
 - Python 3.10+
 - pip
-- [Ollama](https://ollama.com/) installed and running
+- [Ollama](https://ollama.com/) installed
 - at least one Ollama model installed (e.g. `ollama pull llama3.1:8b`)
 
 ### Installing from Source
@@ -45,13 +45,12 @@ docker compose build
 
 ## Usage
 ### Prerequisites 
-- Make sure Ollama is running locally.
-- Make sure that the settings file is placed in: `configs/settings.yaml`
+1.  Make sure that the settings file is placed in: `configs/settings.yaml`
     - you can use the template: `cp configs/settings.example.yaml configs/settings.yaml`
-- The default settings (`configs/settings.yaml`) and workflow file (`configs/workflow_configs.yaml`) assume that the Ollama model `'llama3.1:8b'` is available.
-- Specify your RSS/Atom feeds using either of these methods:
-  - Edit the feed list in `configs/settings.yaml` (the default)
-  - Place an OPML file in the `feeds/` directory (and use the --opml flag, see below)
+2. The default settings (`configs/settings.example.yaml`) and workflow file (`configs/workflow_configs.yaml`) assume that the Ollama model `'llama3.1:8b'` is available (`ollama pull llama3.1:8b`)
+3. Specify your RSS/Atom feeds using either of these methods:
+    - Edit the feed list in `configs/settings.yaml` (the default)
+    - Place an OPML file in the `feeds/` directory
 
 ### Basic Commands
 ```bash
