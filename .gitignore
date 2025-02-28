@@ -180,6 +180,9 @@ data/
 # Generated briefings
 briefings/
 
+# Configs
+settings.yaml
+
 # Logs
 logs/
 

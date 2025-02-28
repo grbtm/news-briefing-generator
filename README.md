@@ -44,9 +44,11 @@ docker compose build
 ```
 
 ## Usage
-### Notes 
+### Prerequisites 
 - Make sure Ollama is running locally.
-- The default settings (configs/settings.yaml) and workflow file (configs/workflow_configs.yaml) assume that the Ollama model 'llama3.1:8b' is available.
+- Make sure that the settings file is placed in: `configs/settings.yaml`
+    - you can use the template: `cp settings.example.yml settings.yml`
+- The default settings (`configs/settings.yaml`) and workflow file (`configs/workflow_configs.yaml`) assume that the Ollama model `'llama3.1:8b'` is available.
 - Specify your RSS/Atom feeds using either of these methods:
   - Edit the feed list in `configs/settings.yaml` (the default)
   - Place an OPML file in the `feeds/` directory (and use the --opml flag, see below)
