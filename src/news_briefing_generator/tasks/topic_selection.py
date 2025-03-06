@@ -276,12 +276,27 @@ class TopicSelectionTask(Task):
             selected_ids: List of topic IDs that were selected
 
         Returns:
-            Formatted string with overview of all topics
+            Formatted string with overview of all topics sorted by article count
         """
-        formatted_topics = []
-        for i, topic in enumerate(topics, 1):
+        # Get article counts for all topics
+        topic_ids = [topic.id for topic in topics]
+        feeds_by_topic = get_feeds_for_topics(db=self.context.db, topic_ids=topic_ids)
+
+        # Create list of tuples for sorting
+        topic_with_counts = []
+        for topic in topics:
             checkmark = "✓" if topic.id in selected_ids else " "
-            formatted_topics.append(f"{topic.id}: [{checkmark}] {topic.title}")
+            article_count = len(feeds_by_topic.get(topic.id, []))
+            topic_with_counts.append((topic, checkmark, article_count))
+
+        # Sort by article count in descending order
+        topic_with_counts.sort(key=lambda x: x[2], reverse=True)
+
+        # Format the sorted topics
+        formatted_topics = [
+            f"{topic.id}: [{checkmark}] {topic.title} ({article_count} articles)"
+            for topic, checkmark, article_count in topic_with_counts
+        ]
 
         return "\n".join(formatted_topics)
 

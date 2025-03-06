@@ -17,8 +17,8 @@ database:
 
 # List of RSS/Atom/JSON feeds
 feeds:
-  - name: "Example feed name"
-    url: ""
+#  - name: "Example feed name"
+#    url: https://www.example.com/feed/"
 
 # For local LLMs
 ollama:

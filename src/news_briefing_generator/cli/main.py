@@ -21,7 +21,9 @@ INFO_SYMBOL = "ℹ️"
 
 
 def _create_workflow_handler(
-    ctx: ApplicationContext, workflow_path: Optional[Path], opml_path: Optional[Path]
+    ctx: ApplicationContext,
+    workflow_config_file: Optional[Path],
+    opml_path: Optional[Path],
 ) -> WorkflowHandler:
     """Create workflow handler with given configuration."""
     handler_kwargs: Dict[str, Any] = {
@@ -31,8 +33,8 @@ def _create_workflow_handler(
         "logger_manager": ctx.logger_manager,
     }
 
-    if workflow_path is not None:
-        handler_kwargs["workflow_path"] = workflow_path
+    if workflow_config_file is not None:
+        handler_kwargs["workflow_config_file"] = workflow_config_file
     if opml_path:
         feeds = parse_opml_file(opml_path)
         ctx.conf.override_feeds(feeds)
@@ -118,15 +120,18 @@ def _print_results(results: Dict[str, TaskResult]) -> None:
 
 @app.command()
 def list_workflows(
-    workflow_path: Path = typer.Option(
-        None, "--workflow", "-w", help="Path to workflow definitions"
+    workflow_config: Path = typer.Option(
+        None,
+        "--workflow-config",
+        "-w",
+        help="Filename of workflow config in the configs/ directory (defaults to workflow_configs.yaml)",
     ),
 ) -> None:
     """List available workflow definitions and their tasks."""
 
     async def _list() -> None:
         async with ApplicationContext() as ctx:
-            handler = _create_workflow_handler(ctx, workflow_path, None)
+            handler = _create_workflow_handler(ctx, workflow_config, None)
 
             if not handler.workflows:
                 typer.echo("No workflows found")
@@ -152,15 +157,18 @@ def list_workflows(
 @app.command()
 def validate(
     workflow_name: str = typer.Argument(..., help="Name of workflow to validate"),
-    workflow_path: Path = typer.Option(
-        None, "--workflow", "-w", help="Path to workflow definitions"
+    workflow_config: Path = typer.Option(
+        None,
+        "--workflow-config",
+        "-w",
+        help="Filename of workflow config in the configs/ directory (defaults to workflow_configs.yaml)",
     ),
 ) -> None:
     """Validate a workflow configuration."""
 
     async def _validate() -> None:
         async with ApplicationContext() as ctx:
-            handler = _create_workflow_handler(ctx, workflow_path, None)
+            handler = _create_workflow_handler(ctx, workflow_config, None)
             await _validate_workflow(handler, workflow_name)
 
     asyncio.run(_validate())
@@ -176,8 +184,11 @@ def run(
     db_path: Path = typer.Option(
         None, "--database", "-d", help="Path to database file"
     ),
-    workflow_path: Path = typer.Option(
-        None, "--workflow", "-w", help="Path to workflow definitions"
+    workflow_config: Path = typer.Option(
+        None,
+        "--workflow-config",
+        "-w",
+        help="Filename of workflow config in the configs/ directory (defaults to workflow_configs.yaml)",
     ),
     opml_path: Optional[Path] = typer.Option(
         None, "--opml", "-o", help="Path to OPML file containing RSS feeds"
@@ -192,7 +203,7 @@ def run(
         async with ApplicationContext(
             config_path, db_path, ollama_url=base_url_ollama, typer_ctx=ctx
         ) as app_ctx:
-            handler = _create_workflow_handler(app_ctx, workflow_path, opml_path)
+            handler = _create_workflow_handler(app_ctx, workflow_config, opml_path)
             await _validate_workflow(handler, workflow_name)
             results = await handler.execute_workflow(workflow_name)
             _print_results(results)

@@ -17,32 +17,59 @@ from news_briefing_generator.utils.path_utils import resolve_config_path
 
 
 class WorkflowHandler:
+    """Manages workflow execution and task orchestration.
+
+    The WorkflowHandler is responsible for loading workflow definitions from YAML files,
+    instantiating tasks, executing them in dependency order, and managing the flow of data
+    between tasks. It serves as the core orchestration engine for the news briefing generation
+    system.
+
+    Workflows are defined as a collection of tasks with dependencies, where each task is
+    executed only after all its dependencies have completed successfully. Tasks can be
+    configured with custom parameters, LLM configurations, and human review requirements.
+    """
+
     def __init__(
         self,
         db: DatabaseManager,
         default_llm: LLM,
         conf: ConfigManager,
         logger_manager: LoggerManager,
-        workflow_path: Optional[Path] = None,
+        workflow_config_file: Optional[Path] = None,
     ):
-        """Initialize workflow handler.
+        """Initialize a workflow handler with the specified configuration.
 
         Args:
-            db: Database connection manager
-            llm: LLM instance for text generation
-            conf: Configuration manager
-            workflow_path: Path to workflow definitions YAML
+            db: Database connection manager for task data persistence
+            default_llm: Default LLM instance for tasks that don't specify their own
+            conf: Configuration manager for accessing application settings
+            logger_manager: Logger manager for creating task-specific loggers
+            workflow_config_file: Path to workflow config file. If None, the default
+                workflow_configs.yaml from the configs directory will be used. If provided,
+                the file name will be resolved relative to the configs directory.
         """
         self.db = db
         self.default_llm = default_llm
         self.conf = conf
         self.logger_manager = logger_manager
         self.logger = logger_manager.get_logger(__name__)
-        self.workflow_path = (
-            workflow_path / "workflow_configs.yaml"
-            if workflow_path
-            else resolve_config_path("workflow_configs.yaml")
-        )
+
+        # Handle workflow config file path resolution
+        if workflow_config_file is None:
+            # Use default path resolution (workflow_configs.yaml in configs dir)
+            self.workflow_path = resolve_config_path("workflow_configs.yaml")
+        else:
+            # If a file path/name is provided, use resolve_config_path to ensure
+            # it's properly resolved relative to the configs directory
+            self.workflow_path = resolve_config_path(workflow_config_file.name)
+
+        # Verify file exists after resolution
+        if not self.workflow_path.exists():
+            raise FileNotFoundError(
+                f"Workflow config file not found at {self.workflow_path}. "
+                f"Make sure the file is placed inside the configs/ directory."
+            )
+
         self._load_workflow_config(self.workflow_path)
 
     def _load_workflow_config(self, path: Path) -> None:
@@ -183,12 +210,13 @@ class WorkflowHandler:
         self.logger.info(
             f"Executing workflow: {workflow_name} with configs: {self.conf.get_all_configs()}"
         )
+        # Get all task configs first
+        task_configs = [
+            self._create_task_config(task_dict) for task_dict in workflow["tasks"]
+        ]
 
         # Execute tasks in dependency order
-        for task_dict in workflow["tasks"]:
-
-            # Convert task dictionary to TaskConfig
-            task_config = self._create_task_config(task_dict)
+        for i, task_config in enumerate(task_configs):
 
             # Check all dependencies first
             failed_deps = []
@@ -212,6 +240,13 @@ class WorkflowHandler:
                     metrics={"dependency_failures": len(failed_deps)},
                 )
 
+                # Mark all remaining tasks as failed due to dependency chain
+                self._mark_remaining_tasks_as_failed(
+                    task_configs[i + 1 :],
+                    results,
+                    f"Skipped due to workflow failure: dependency chain broken",
+                )
+
                 # Stop workflow execution
                 self.logger.error(
                     f"Workflow {workflow_name} stopped due to dependency failures"
@@ -222,9 +257,17 @@ class WorkflowHandler:
             result = await self._execute_task(task_config, context)
             results[task_config.name] = result
 
-            # Stop on failure
+            # Stop on failure but mark remaining tasks as skipped
             if not result.success:
                 self.logger.error(f"Workflow stopped: {task_config.name} failed")
+
+                # Mark all remaining tasks as failed due to preceding task failure
+                self._mark_remaining_tasks_as_failed(
+                    task_configs[i + 1 :],
+                    results,
+                    f"Skipped due to failure of {task_config.name}",
+                )
+
                 break
 
             # Update context with result data
@@ -249,3 +292,19 @@ class WorkflowHandler:
             human_review=task_dict.get("human_review", False),
             llm_config=task_dict.get("llm", None),
         )
+
+    def _mark_remaining_tasks_as_failed(
+        self,
+        remaining_configs: list,
+        results: Dict[str, TaskResult],
+        error_message: str,
+    ) -> None:
+        """Mark all remaining tasks as failed with the provided error message."""
+        for remaining_config in remaining_configs:
+            results[remaining_config.name] = TaskResult(
+                task_name=remaining_config.name,
+                success=False,
+                created_at=get_utc_now_formatted(),
+                error=error_message,
+                metrics={"skipped_due_to_workflow_failure": True},
+            )

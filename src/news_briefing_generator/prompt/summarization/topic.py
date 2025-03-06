@@ -23,8 +23,8 @@ Guidelines for structured writing:
 - Base every statement on information from the provided summaries.
 - Do not add external knowledge or context not present in the input.
 - Support claims with specific facts and data from the summaries only.
-- Do not reference any collective actor such as ‘the international community’ or imply a global moral stance. Keep statements local to identified parties or named groups only.
-- Avoid broad, sweeping statements such as ‘Overall, the conflict is X’ or ‘The international community must...’. Stick to specific, verifiable details drawn from the article summaries.
+- Refer only to specific named entities (countries, organizations, individuals) rather than vague collective actors like "the international community" or "the world."
+- Focus on precise, verifiable details from the summaries instead of broad generalizations or prescriptive statements about what "must" or "should" happen.
 - Avoid anecdotal evidence or individual stories
 - **Ensure that each sentence presents new information and avoids repeating previously stated facts or ideas.**
 - **Strive for a concise and efficient summary, avoiding redundancy.**

@@ -27,7 +27,7 @@ workflows:
         task_type: ContentFetchingTask
         depends_on: [select_topics]
         params:
-          check_robots_txt: false
+          check_robots_txt: true
 
       - name: summarize_articles
         task_type: ArticleSummarizationTask
@@ -77,7 +77,7 @@ workflows:
         task_type: ContentFetchingTask
         depends_on: [select_topics]
         params:
-          check_robots_txt: false
+          check_robots_txt: true
 
       - name: summarize_articles
         task_type: ArticleSummarizationTask
