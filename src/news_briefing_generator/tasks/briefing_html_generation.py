@@ -89,8 +89,20 @@ class BriefingHtmlGenerationTask(Task):
 
         # Fetch related articles for each topic
         topics_with_articles = []
+        skipped_topics = 0
+
         for topic in topics:
             topic_id = topic[0]
+            topic_summary = topic[3] if len(topic) > 2 else "No summary available."
+
+            # Skip topics with error summaries
+            if "<ERROR> Cannot determine coherent topic. <ERROR>" in topic_summary:
+                self.logger.warning(
+                    f"Skipping topic {topic_id} due to incoherent content error"
+                )
+                skipped_topics += 1
+                continue
+
             articles = db.run_query(
                 f"""
                 SELECT f.source, f.title, tf.used_for_summarization, f.link
@@ -115,6 +127,11 @@ class BriefingHtmlGenerationTask(Task):
                     ],
                 }
             )
+
+        # Add warning if topics were skipped
+        if skipped_topics > 0:
+            warning_msg = f"Skipped {skipped_topics} topic(s) due to incoherent content"
+            self.logger.warning(warning_msg)
 
         # Prepare template data
         template_data = {
@@ -142,7 +159,7 @@ class BriefingHtmlGenerationTask(Task):
             task_name=self.name,
             success=True,
             created_at=get_utc_now_formatted(),
-            metrics={"topics_rendered": len(topics)},
+            metrics={"topics_rendered": len(topics), "topics_skipped": skipped_topics},
             data={
                 "briefing_id": briefing_id,
                 "output_path": output_path,

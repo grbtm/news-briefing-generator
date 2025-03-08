@@ -191,14 +191,32 @@ class TopicSummarizationTask(Task):
             task.topic_id: message for task, message in zip(tasks, messages)
         }
 
+        error_pattern = "<ERROR> Cannot determine coherent topic. <ERROR>"
+        error_count = 0
+
         # Update database
-        updates = [
-            (preprocess_llm_output(message.content), task.topic_id)
-            for task, message in zip(tasks, messages)
-        ]
+        updates = []
+        for task, message in zip(tasks, messages):
+            content = preprocess_llm_output(message.content)
+
+            # Check for error pattern in the summary
+            if error_pattern in content:
+                self.logger.warning(
+                    f"Topic {task.topic_id} ({task.topic_title}) has an incoherent content error"
+                )
+                error_count += 1
+
+            updates.append((content, task.topic_id))
+
         self.context.db.update_many(
             table="topics", columns=["summary"], values=updates, condition_columns="id"
         )
+
+        if error_count > 0:
+            self.logger.warning(
+                f"{error_count} out of {len(updates)} topics have incoherent content errors"
+            )
+
         self.logger.info(
             f"Topic summaries generated and stored for {len(updates)} topics"
         )

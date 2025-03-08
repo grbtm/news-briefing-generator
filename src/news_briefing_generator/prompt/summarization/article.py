@@ -15,7 +15,6 @@ Guidelines:
 - Report and explain facts and developments and clearly mark any personal opinions or interpretations
 - Develop each point fully before moving to the next!
 - Organize related subtopics in a logical flow, using clear transitions between ideas!
-- Include specific dates and numbers when present, but cite them only if you are certain of their accuracy
 - Exclude advertisements, comments, navigation elements and article metadata (e.g. 'updated on'), consider only the main article content
 - Refer only to specific named entities (countries, organizations, individuals) rather than vague collective actors like "the international community" or "the world."
 - Focus on precise, verifiable details from the article instead of broad generalizations or prescriptive statements about what "must" or "should" happen.

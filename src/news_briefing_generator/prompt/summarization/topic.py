@@ -37,14 +37,14 @@ Style requirements:
 - Use line breaks to separate distinct ideas or developments
 - Focus on verified facts over opinions
 - Use precise language and specific examples
-- Include dates and numbers when available
+- Cite dates and numbers only if you are certain of their accuracy and context
 - Avoid moral/ethical conclusions
 - Refrain from suggesting what "should" be done
 - Do not make statements on behalf of "the international community"
 - Do not propose actions or solutions; focus only on describing facts, the involved subjects and their interests, and factual developments.
 - Respond with your summary text, without any opening titles, meta-commentary or follow-up questions.
 
-If no clear topic emerges from the articles, respond with: "<ERROR>: Cannot determine coherent topic."""
+If no clear topic emerges from the articles, respond with: "<ERROR> Cannot determine coherent topic. <ERROR>"""
 
 TOPIC_SUMMARY_USER = """Generate a structured summary based on the information given in the article summaries below: 
 
