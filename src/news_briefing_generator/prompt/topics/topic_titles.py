@@ -11,6 +11,12 @@ TOPIC_TITLE_GENERATION_USER = f"""
                         one topic title. Go for a title that is informative, 
                         sticking to the facts, concise and to the point 
                         - avoid tabloid-style sensationalism.
+
+                        Style requirements:
+                        - Use plain text format with no markup or formatting characters
+                        - Do not use asterisks, underscores, or other symbols for emphasis
+                        - Do not wrap the headline in any special characters like * or **
+                        - Write the headline as plain text only
                         \n\nHEADLINES:
                         \n\n{{headlines}}
                         \n\nTOPIC TITLE (REMEMBER TO RESPOND DIRECTLY WITH EXACTLY ONE TOPIC HEADLINE):"""
