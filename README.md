@@ -119,10 +119,10 @@ The application uses a single SQLite database to store all feed data. When worki
 
 ```bash
 # Use a specific database for tech news feeds
-python -m news_briefing_generator.cli.main full_briefing --database tech_news.sqlite --opml tech_feeds.opml
+news-briefing run --database tech_news.sqlite --opml tech_feeds.opml full_briefing
 
 # Use another database for world news feeds
-python -m news_briefing_generator.cli.main full_briefing --database world_news.sqlite --opml world_feeds.opml
+news-briefing run --database world_news.sqlite --opml world_feeds.opml full_briefing
 ```
 
 ## Tests
