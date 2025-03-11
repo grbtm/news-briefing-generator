@@ -95,7 +95,13 @@ class BriefingHtmlGenerationTask(Task):
             topic_id = topic[0]
             topic_summary = topic[3] if len(topic) > 2 else "No summary available."
 
-            # Skip topics with error summaries
+            # Skip topics with no summary (when no fetched article content was found)
+            if not topic_summary:
+                self.logger.warning(f"Skipping topic {topic_id} with no summary")
+                skipped_topics += 1
+                continue
+
+            # Skip topics with error summaries (when no coherent topic was determined)
             if "<ERROR> Cannot determine coherent topic. <ERROR>" in topic_summary:
                 self.logger.warning(
                     f"Skipping topic {topic_id} due to incoherent content error"
@@ -130,7 +136,7 @@ class BriefingHtmlGenerationTask(Task):
 
         # Add warning if topics were skipped
         if skipped_topics > 0:
-            warning_msg = f"Skipped {skipped_topics} topic(s) due to incoherent content"
+            warning_msg = f"Skipped {skipped_topics} topic(s) without summary"
             self.logger.warning(warning_msg)
 
         # Prepare template data
