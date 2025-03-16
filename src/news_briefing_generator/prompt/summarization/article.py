@@ -30,7 +30,7 @@ Format guidelines:
 - Present ideas in a logical flow without abrupt topic shifts
 - Exclude advertisements, comments, navigation elements and metadata
 
-If the text appears to be non-article content only (ads, navigation, etc.), respond with: "<ERROR> No article content found. <ERROR>"
+If the text appears to be non-article content only (ads, navigation, embedded video etc.), respond with: "<ERROR> No article content found. <ERROR>"
 """
 
 ARTICLE_SUMMARY_USER = f"""Summarize the following webpage text:
