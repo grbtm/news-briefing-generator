@@ -21,6 +21,8 @@ Content guidelines:
 - Present factual information and verifiable details from the article
 - Attribute normative statements and special interests to their sources (e.g., "Organization X advocates for..." or "According to Party Y...")
 - Avoid giving advice, making moral judgments, or suggesting what "should" be done
+- Carefully distinguish between article publication dates and event occurrence dates
+- Do not interpret timestamps or publication dates from webpage metadata as dates when events occurred
 
 Format guidelines:
 - Organize information by importance (most significant first)
