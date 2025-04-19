@@ -20,12 +20,22 @@ feeds:
 #  - name: "Example feed name"
 #    url: https://www.example.com/feed/"
 
+# LLM provider selection ("ollama" or "openai")
+llm_provider: "ollama"
+
 # For local LLMs
 ollama:
   base_url: "http://localhost:11434"
   model: "llama3.1:8b" # Model name
   num_ctx: 12288 # Set the context window size
   num_predict: 8192 # Number of prediction tokens
+  temperature: 0.3 # Sampling temperature
+
+# For OpenAI models
+openai:
+  api_key: "your-api-key-here" # Add this to your actual settings.yaml and confirm that it is in .gitignore
+  model: "gpt-3.5-turbo" # Model name
+  max_tokens: 8192 # Maximum generation length
   temperature: 0.3 # Sampling temperature
 
 # Logging configuration

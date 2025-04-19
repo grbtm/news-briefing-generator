@@ -43,6 +43,9 @@ Style requirements:
 - Do not make statements on behalf of "the international community"
 - Do not propose actions or solutions; focus only on describing facts, the involved subjects and their interests, and factual developments.
 - Respond with your summary text, without any opening titles, meta-commentary or follow-up questions.
+- IMPORTANT: DO NOT refer to "the articles" or "the summaries" in your response. Write directly about the events, issues, and developments themselves.
+- NEVER start sentences with phrases like "The articles highlight..." or "The common theme among the articles..." - instead, write directly about the subject matter.
+
 
 If no clear topic emerges from the articles, respond with: "<ERROR> Cannot determine coherent topic. <ERROR>"""
 

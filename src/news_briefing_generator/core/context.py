@@ -11,7 +11,9 @@ import typer
 from news_briefing_generator.config.config_manager import ConfigManager
 from news_briefing_generator.db.helpers import get_sql_command
 from news_briefing_generator.db.sqlite import DatabaseManager
+from news_briefing_generator.llm.base import LLM
 from news_briefing_generator.llm.ollama import OllamaModel
+from news_briefing_generator.llm.openai import OpenAIModel
 from news_briefing_generator.logging.manager import LogConfig, LoggerManager
 
 
@@ -50,7 +52,7 @@ class ApplicationContext(AbstractAsyncContextManager):
         self.db: Optional[DatabaseManager] = None
         self.conf: Optional[ConfigManager] = None
         self.logger_manager: Optional[LoggerManager] = None
-        self.default_llm: Optional[OllamaModel] = None
+        self.default_llm: Optional[LLM] = None
 
     async def __aenter__(self) -> "ApplicationContext":
         """Initialize application resources."""
@@ -76,15 +78,9 @@ class ApplicationContext(AbstractAsyncContextManager):
             # Initialize database with schema
             self._initialize_database()
 
-            # Initialize default LLM
-            ollama_config = self.conf.get("ollama").copy()
-            if self.ollama_url:
-                ollama_config["base_url"] = self.ollama_url
-            else:
-                ollama_config["base_url"] = os.getenv("NBG_BASE_URL_OLLAMA")
-
-            self.default_llm = OllamaModel(**ollama_config)
-            self.logger.info(f"Default LLM initialized: {self.default_llm}")
+            # Initialize LLM
+            await self._initialize_llm()
+            self.logger.info(f"LLM initialized: {self.default_llm}")
 
             return self
 
@@ -184,3 +180,59 @@ class ApplicationContext(AbstractAsyncContextManager):
         # Verify logger setup
         if not self.logger.handlers:
             raise RuntimeError("Logger initialization failed")
+
+    async def _initialize_llm(self) -> None:
+        """Initialize LLM if specified in config."""
+        llm_provider = self.conf.get_param("llm_provider", default="ollama").value
+
+        if llm_provider == "ollama":
+            ollama_base_url = self.conf.get_param("ollama.base_url").value
+            if self.ollama_url:  # Honor the URL passed to constructor
+                ollama_base_url = self.ollama_url
+            elif os.getenv("NBG_BASE_URL_OLLAMA"):  # Then check environment variable
+                ollama_base_url = os.getenv("NBG_BASE_URL_OLLAMA")
+
+            ollama_model = self.conf.get_param("ollama.model").value
+
+            # Get additional Ollama parameters
+            ollama_params = {
+                "model": ollama_model,
+                "base_url": ollama_base_url,
+                "num_ctx": self.conf.get_param("ollama.num_ctx", default=4096).value,
+                "num_predict": self.conf.get_param(
+                    "ollama.num_predict", default=12288
+                ).value,
+                "temperature": self.conf.get_param(
+                    "ollama.temperature", default=0.4
+                ).value,
+            }
+
+            self.default_llm = OllamaModel(**ollama_params)
+            self.logger.info(f"Initialized Ollama LLM: {str(self.default_llm)}")
+
+        elif llm_provider == "openai":
+            # Try environment variable first, then config
+            api_key = os.getenv("NBG_OPENAI_API_KEY")
+            if not api_key:
+                api_key = self.conf.get_param("openai.api_key").value
+
+            model = self.conf.get_param("openai.model", default="gpt-3.5-turbo").value
+
+            # Get additional OpenAI parameters
+            openai_params = {
+                "model": model,
+                "api_key": api_key,
+                "temperature": self.conf.get_param(
+                    "openai.temperature", default=0.4
+                ).value,
+                "max_tokens": self.conf.get_param(
+                    "openai.max_tokens", default=12288
+                ).value,
+            }
+
+            self.default_llm = OpenAIModel(**openai_params)
+            self.logger.info(f"Initialized OpenAI LLM: {str(self.default_llm)}")
+
+        else:
+            self.logger.warning(f"Unsupported LLM provider: {llm_provider}")
+            self.default_llm = None
