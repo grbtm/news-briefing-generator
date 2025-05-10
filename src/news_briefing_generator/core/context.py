@@ -15,6 +15,7 @@ from news_briefing_generator.llm.base import LLM
 from news_briefing_generator.llm.ollama import OllamaModel
 from news_briefing_generator.llm.openai import OpenAIModel
 from news_briefing_generator.logging.manager import LogConfig, LoggerManager
+from news_briefing_generator.utils.security import get_openai_api_key
 
 
 class ApplicationContext(AbstractAsyncContextManager):
@@ -211,11 +212,7 @@ class ApplicationContext(AbstractAsyncContextManager):
             self.logger.info(f"Initialized Ollama LLM: {str(self.default_llm)}")
 
         elif llm_provider == "openai":
-            # Try environment variable first, then config
-            api_key = os.getenv("NBG_OPENAI_API_KEY")
-            if not api_key:
-                api_key = self.conf.get_param("openai.api_key").value
-
+            api_key = get_openai_api_key(self.conf)
             model = self.conf.get_param("openai.model", default="gpt-3.5-turbo").value
 
             # Get additional OpenAI parameters

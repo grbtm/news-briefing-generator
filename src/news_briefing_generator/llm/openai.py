@@ -10,15 +10,32 @@ class OpenAIModel(LLM):
     """OpenAI LLM interface."""
 
     def __init__(self, api_key: Optional[str] = None, **kwargs: Any) -> None:
-        super().__init__("openai", None)  # OpenAI doesn't use base_url like Ollama
+        super().__init__("openai", None)
+
+        # Use api_key from kwargs if the explicit parameter is None
+        if api_key is None and "api_key" in kwargs:
+            api_key = kwargs.pop("api_key")
+
+        # Always ensure api_key is removed from kwargs
+        kwargs.pop("api_key", None)
+
+        # Pass the API key to ChatOpenAI but don't store it
         self.model = ChatOpenAI(api_key=api_key, **kwargs)
+
+        # Store kwargs
         self.config = kwargs
 
     def __str__(self) -> str:
-        # Exclude API key from string representation for security
-        safe_config = {k: v for k, v in self.config.items() if k != "api_key"}
+        safe_config = self.config.copy()
+        if "api_key" in safe_config:
+            safe_config.pop("api_key")
+
         config_str = ", ".join(f"{k}={v}" for k, v in safe_config.items())
-        return f"OpenAIModel({config_str})"
+        return f"OpenAIModel(base_url={self.base_url}, {config_str})"
+
+    def __repr__(self) -> str:
+        # Use the same implementation as __str__ to avoid leaking API key in debugging
+        return self.__str__()
 
     def generate(self, prompts: Any) -> BaseMessage:
         return self.model.invoke(prompts)
