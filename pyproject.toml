@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "news-briefing-generator"
-version = "0.1.0"
+version = "0.1.1"
 description = "Local LLM-powered news briefing generator from RSS feeds."
 readme = "README.md"
 requires-python = ">=3.10"
@@ -35,6 +35,8 @@ dependencies = [
     "langchain==0.3.19",
     "langchain-ollama==0.2.3",
     "langchain-huggingface==0.1.2",
+    "langchain-openai>=0.1.1",
+    "openai>=1.0.0",
     "pytz==2024.2",
 ]
 

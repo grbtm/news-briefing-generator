@@ -7,6 +7,7 @@ from news_briefing_generator.config.config_manager import ConfigManager
 from news_briefing_generator.db.sqlite import DatabaseManager
 from news_briefing_generator.llm.base import LLM
 from news_briefing_generator.llm.ollama import OllamaModel
+from news_briefing_generator.llm.openai import OpenAIModel
 from news_briefing_generator.logging.manager import LoggerManager
 from news_briefing_generator.model.task.base import Task, TaskContext
 from news_briefing_generator.model.task.config import TaskConfig
@@ -14,6 +15,7 @@ from news_briefing_generator.model.task.result import TaskResult
 from news_briefing_generator.tasks import TASK_REGISTRY
 from news_briefing_generator.utils.datetime_ops import get_utc_now_formatted
 from news_briefing_generator.utils.path_utils import resolve_config_path
+from news_briefing_generator.utils.security import get_openai_api_key
 
 
 class WorkflowHandler:
@@ -142,6 +144,17 @@ class WorkflowHandler:
                 )
 
             return OllamaModel(**llm_kwargs)
+
+        elif llm_type == "openai":
+            # Remove type from kwargs
+            llm_kwargs = task_config.llm_config.copy()
+            llm_kwargs.pop("type")
+
+            # Get API key from environment or config
+            llm_kwargs["api_key"] = get_openai_api_key(self.conf)
+
+            return OpenAIModel(**llm_kwargs)
+
         else:
             self.logger.warning(
                 f"Unknown LLM type {llm_type} for task {task_config.name}, "

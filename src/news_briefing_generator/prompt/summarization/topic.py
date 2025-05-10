@@ -30,7 +30,7 @@ Guidelines for structured writing:
 - **Strive for a concise and efficient summary, avoiding redundancy.**
 
 Style requirements:
-- Write 5 to max 10 sentences based on information density
+- Write 2 to max 3 sentences based on information density
 - Write only about verifiable facts from the article summaries, focusing on clarifying the known positions and interests of identified individuals, organizations, or countries.
 - Write continuous text, without bullet points!
 - Maintain strictly objective, journalistic tone
@@ -43,6 +43,14 @@ Style requirements:
 - Do not make statements on behalf of "the international community"
 - Do not propose actions or solutions; focus only on describing facts, the involved subjects and their interests, and factual developments.
 - Respond with your summary text, without any opening titles, meta-commentary or follow-up questions.
+- IMPORTANT: DO NOT refer to "the articles" or "the summaries" in your response. Write directly about the events, issues, and developments themselves.
+- NEVER start sentences with phrases like "The articles highlight..." or "The common theme among the articles..." - instead, write directly about the subject matter.
+- Examples of how to start sentences:
+    Instead of: "The articles detail tensions between Country A and Country B..."
+    Write: "Tensions between Country A and Country B have escalated following..."
+
+    Instead of: "The main focus across the articles is the economic crisis..."
+    Write: "The economic crisis in Region X has deepened as inflation rates..."
 
 If no clear topic emerges from the articles, respond with: "<ERROR> Cannot determine coherent topic. <ERROR>"""
 
@@ -54,5 +62,5 @@ TOPIC_SUMMARY_USER = """Generate a structured summary based on the information g
 
 REMEMBER:
 - RESPOND DIRECTLY WITH YOUR SUMMARY TEXT ONLY - WITHOUT ANY HEADLINES, ADDITIONAL INTRODUCTIONS, COMMENTS OR QUESTIONS!
-- **WRITE 5 TO MAX 10 SENTENCES based on information density**
+- **WRITE 2 TO MAX 3 SENTENCES based on information density**
 """

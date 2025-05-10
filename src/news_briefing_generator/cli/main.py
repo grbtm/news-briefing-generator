@@ -1,4 +1,5 @@
 import asyncio
+import os
 from pathlib import Path
 from typing import Any, Dict, Optional
 
@@ -9,6 +10,13 @@ from news_briefing_generator.model.task.result import TaskResult
 from news_briefing_generator.tasks import TASK_REGISTRY
 from news_briefing_generator.utils.opml_parser import parse_opml_file
 from news_briefing_generator.workflow.workflow_handler import WorkflowHandler
+
+# Disable HuggingFace tokenizers parallelism to prevent deadlocks when forking processes
+# This avoids the warning: "The current process just got forked, after parallelism has already been used."
+# Issue occurs because FeedHdbscanClusteringTask initializes tokenizers with threading
+# while TopicTitleGenerationTask creates child processes
+os.environ["TOKENIZERS_PARALLELISM"] = "false"
+
 
 app = typer.Typer(
     help="News Briefing Generator",

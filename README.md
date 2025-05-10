@@ -1,6 +1,8 @@
 # News Briefing Generator
 An automated tool that fetches, clusters, and summarizes news articles from various RSS feeds to generate a news briefing based on the feed entries of the past hours (configurable). Powered by locally running LLMs through [Ollama](https://ollama.com/). Final briefing is made available as HTML file.
 
+## What's New in 0.1.1
+- Added support for OpenAI models
 
 ## Installation
 Note: Currently only tested on macOS.
@@ -74,7 +76,7 @@ news-briefing run full_briefing_w_selection_review
 ```
 
 
-## Docker Usage
+### Docker Usage
 ```bash
 docker compose run news-briefing [OPTIONS] COMMAND [ARGS]
 ```
@@ -100,6 +102,34 @@ General configuration precedence (highest to lowest):
 ## Key Configuration Files
 - configs/settings.yaml: Core settings including database path, RSS feeds, and default LLM parameters
 - configs/workflow_configs.yaml: Define workflows and task configurations
+
+### LLM Configuration
+The application supports two LLM providers:
+
+#### Ollama (Default)
+```yaml
+llm_provider: "ollama"
+ollama:
+  base_url: "http://localhost:11434"
+  model: "llama3.1:8b"
+  num_ctx: 12288
+  num_predict: 8192
+  temperature: 0.3
+```
+
+#### OpenAI
+```yaml
+llm_provider: "openai"
+openai:
+  api_key: "your-api-key"  # settings.yaml is included in .gitignore
+  model: "gpt-3.5-turbo"
+  max_tokens: 1024
+  temperature: 0.3
+```
+You can also set your OpenAI API key as an environment variable:
+```bash
+export NBG_OPENAI_API_KEY="your-api-key"
+```
 
 ## Project Structure
 - news_briefing_generator: Source code
