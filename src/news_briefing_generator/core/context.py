@@ -220,12 +220,15 @@ class ApplicationContext(AbstractAsyncContextManager):
                 "model": model,
                 "api_key": api_key,
                 "temperature": self.conf.get_param(
-                    "openai.temperature", default=0.4
+                    "openai.temperature", default=None
                 ).value,
                 "max_tokens": self.conf.get_param(
-                    "openai.max_tokens", default=12288
+                    "openai.max_tokens", default=None
                 ).value,
             }
+
+            # Remove None values to avoid passing them to the model
+            openai_params = {k: v for k, v in openai_params.items() if v is not None}
 
             self.default_llm = OpenAIModel(**openai_params)
             self.logger.info(f"Initialized OpenAI LLM: {str(self.default_llm)}")
