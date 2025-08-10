@@ -1,8 +1,8 @@
 # News Briefing Generator
 An automated tool that fetches, clusters, and summarizes news articles from various RSS feeds to generate a news briefing based on the feed entries of the past hours (configurable). Powered by locally running LLMs through [Ollama](https://ollama.com/). Final briefing is made available as HTML file.
 
-## What's New in 0.1.1
-- Added support for OpenAI models
+## What's New in 0.1.2
+- Added support for OpenAI GPT 5 models
 
 ## Installation
 Note: Currently only tested on macOS.
