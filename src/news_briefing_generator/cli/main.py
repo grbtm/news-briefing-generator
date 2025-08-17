@@ -216,7 +216,7 @@ def run(
             results = await handler.execute_workflow(workflow_name)
             _print_results(results)
 
-            # Non-zero exit so CI fails when any task fails
+            # Non-zero exit when any task fails
             if not results or any(not r.success for r in results.values()):
                 raise typer.Exit(code=1)
 
