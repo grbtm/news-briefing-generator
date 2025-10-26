@@ -23,9 +23,11 @@ class TopicTitleGenerationTask(Task):
 
     Attributes:
         DEFAULT_MAX_SUMMARY_LENGTH (int): Default character limit for article summaries
+        DEFAULT_MAX_TITLE_WORDS (int): Default maximum words for generated topic titles
     """
 
     DEFAULT_MAX_SUMMARY_LENGTH: int = 500
+    DEFAULT_MAX_TITLE_WORDS: int = 10
 
     def __init__(self, context: TaskContext):
         super().__init__(context)
@@ -44,7 +46,10 @@ class TopicTitleGenerationTask(Task):
             max_summary_length = self.get_parameter(
                 "max_summary_length", default=self.DEFAULT_MAX_SUMMARY_LENGTH
             )
-            return await self._run_title_generation(max_summary_length)
+            max_title_words = self.get_parameter(
+                "max_title_words", default=self.DEFAULT_MAX_TITLE_WORDS
+            )
+            return await self._run_title_generation(max_summary_length, max_title_words)
         except Exception as e:
             self.logger.error(f"Topic title generation failed: {str(e)}", exc_info=True)
             return TaskResult(
@@ -56,7 +61,7 @@ class TopicTitleGenerationTask(Task):
             )
 
     async def _run_title_generation(
-        self, max_summary_length: Optional[int]
+        self, max_summary_length: Optional[int], max_title_words: int
     ) -> TaskResult:
         """Generate titles for topic clusters using LLM.
 
@@ -66,6 +71,7 @@ class TopicTitleGenerationTask(Task):
 
         Args:
             max_summary_length: Character limit for article summaries
+            max_title_words: Maximum words for generated topic titles
 
         Returns:
             TaskResult with generated titles and metrics
@@ -106,7 +112,9 @@ class TopicTitleGenerationTask(Task):
 
             if formatted_text:
                 prompts = llm.prepare_prompts(
-                    human=TOPIC_TITLE_GENERATION_USER.format(headlines=formatted_text),
+                    human=TOPIC_TITLE_GENERATION_USER.format(
+                        headlines=formatted_text, max_words=max_title_words
+                    ),
                     system=TOPIC_TITLE_GENERATION_SYSTEM,
                 )
                 tasks.append(llm.generate_async(prompts=prompts))
