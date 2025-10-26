@@ -5,6 +5,7 @@ TOPIC_TITLE_GENERATION_SYSTEM = (
 TOPIC_TITLE_GENERATION_USER = """Create one brief headline summarizing these article headlines/abstracts.
 
 Style requirements:
+- Maximum length: {max_words} words
 - Use title case (capitalize main words), not ALL CAPS
 - Be informative and factual, avoid sensationalism
 - Provide only the headline with no explanation or commentary
