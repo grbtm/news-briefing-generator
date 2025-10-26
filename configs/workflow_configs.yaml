@@ -70,12 +70,6 @@ workflows:
         params:
           nr_topics: 10
           nr_sample_headlines: 7
-        llm:
-          type: "ollama"
-          model: "llama3.1:8b"
-          num_ctx: 12288
-          num_predict: 8192
-          temperature: 0.3
 
       - name: fetch_content
         task_type: ContentFetchingTask

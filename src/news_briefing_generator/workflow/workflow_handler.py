@@ -11,7 +11,7 @@ from news_briefing_generator.llm.openai import OpenAIModel
 from news_briefing_generator.logging.manager import LoggerManager
 from news_briefing_generator.model.task.base import Task, TaskContext
 from news_briefing_generator.model.task.config import TaskConfig
-from news_briefing_generator.model.task.result import TaskResult
+from news_briefing_generator.model.task.result import NO_DATA_WARNING, TaskResult
 from news_briefing_generator.tasks import TASK_REGISTRY
 from news_briefing_generator.utils.datetime_ops import get_utc_now_formatted
 from news_briefing_generator.utils.path_utils import resolve_config_path
@@ -279,6 +279,33 @@ class WorkflowHandler:
                     task_configs[i + 1 :],
                     results,
                     f"Skipped due to failure of {task_config.name}",
+                )
+
+                break
+
+            # Check for no-data warnings in critical tasks
+            # Critical tasks are those that must produce data for the workflow to continue
+            CRITICAL_TASKS = ["collect_feeds", "cluster_feeds", "generate_topic_titles"]
+            if (
+                task_config.name in CRITICAL_TASKS
+                and result.warning
+                and NO_DATA_WARNING in result.warning
+            ):
+                self.logger.error(
+                    f"Workflow stopped: {task_config.name} completed but has no data to process."
+                )
+                self.logger.error(f"Warning message: {result.warning}")
+
+                # Mark this task as failed
+                result.success = False
+                result.error = f"Critical task completed with no data: {result.warning}"
+                results[task_config.name] = result
+
+                # Mark all remaining tasks as skipped
+                self._mark_remaining_tasks_as_failed(
+                    task_configs[i + 1 :],
+                    results,
+                    f"Skipped due to no data from {task_config.name}",
                 )
 
                 break
